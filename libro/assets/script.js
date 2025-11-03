@@ -14,8 +14,8 @@ const chapters = [
     'Hacia el matrimonio – Preparando nuestro “para siempre”.'
 ];
 
-// ROT13 encoded: CTF{javascript_is_fun} -> PSS{wninfpevcg_vf_sha}
-const secretKey = "PSS{wninfpevcg_vf_sha}";
+// ROT13 encoded: CTF{javascript_is_fun} -> PGS{wninfpevcg_vf_sha}
+const secretKey = "PGS{wninfpevcg_vf_sha}";
 
 const pagesContent = [
     // Aquí puedes agregar el contenido de cada capítulo
