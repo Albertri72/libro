@@ -1,3 +1,6 @@
+// CTF Challenge System - Can you find all the flags?
+// Hint: Not everything is as it seems...
+
 const chapters = [
     'Nuestro primer mes juntos – Un nuevo comienzo lleno de perdón, esperanza y propósito.',
     'Nuestro segundo mes – El crecimiento de un amor sostenido por la fe y la familia.',
@@ -10,6 +13,9 @@ const chapters = [
     'Nuestro compromiso – La promesa de un amor eterno.',
     'Hacia el matrimonio – Preparando nuestro “para siempre”.'
 ];
+
+// ROT13 encoded: PST{whirefpevcg_vf_sha}
+const secretKey = "PSG{whirefpevcg_vf_sha}";
 
 const pagesContent = [
     // Aquí puedes agregar el contenido de cada capítulo
@@ -89,3 +95,79 @@ copyLinkIndexBtn.addEventListener('click', () => {
 bookPages.style.display = 'none';
 bookNavigation.style.display = 'none';
 bookIndex.style.display = 'block';
+
+// Console challenge - FLAG4
+console.log('%cCTF Challenge System Loaded', 'color: #a67c52; font-size: 16px; font-weight: bold;');
+console.log('%cFLAG4: CTF{c0ns0l3_l0gg1ng_s3cr3ts}', 'color: green;');
+console.log('%cHint: Try decoding the ROT13 secret above... secretKey variable');
+
+// Advanced JavaScript challenge - Obfuscated flag
+const _0x1a2b = ['CTF{', 'j4v4', 'scr1', 'pt_0', 'bfus', 'c4t1', '0n}'];
+const FLAG6 = _0x1a2b[0] + _0x1a2b[1] + _0x1a2b[2] + _0x1a2b[3] + _0x1a2b[4] + _0x1a2b[5] + _0x1a2b[6];
+
+// URL Parameter challenge - FLAG7
+if (window.location.search.includes('?unlock=true')) {
+    console.log('FLAG7: CTF{url_p4r4m3t3rs_unl0ck3d}');
+}
+
+// Event-based flag - FLAG8 (triggered by konami code: up, up, down, down, left, right, left, right, b, a)
+let konamiCode = [];
+const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+document.addEventListener('keydown', (e) => {
+    konamiCode.push(e.key);
+    konamiCode = konamiCode.slice(-10);
+    if (konamiCode.join(',') === konamiSequence.join(',')) {
+        console.log('%c🎮 KONAMI CODE ACTIVATED! 🎮', 'color: gold; font-size: 20px; font-weight: bold;');
+        console.log('%cFLAG8: CTF{k0n4m1_c0d3_m4st3r}', 'color: gold; font-size: 16px;');
+        alert('🎮 Konami Code Activated! Check console for FLAG8!');
+    }
+});
+
+// Time-based challenge - FLAG9 (only shows between 13:37 - 13:38)
+function checkLeetTime() {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    if (hours === 13 && minutes === 37) {
+        console.log('%c⏰ LEET TIME DETECTED! ⏰', 'color: purple; font-size: 20px;');
+        console.log('%cFLAG9: CTF{l33t_t1m3_h4ck3r}', 'color: purple; font-size: 16px;');
+    }
+}
+setInterval(checkLeetTime, 30000); // Check every 30 seconds
+checkLeetTime(); // Check immediately
+
+// Master flag validator - FLAG10
+function validateAllFlags(flags) {
+    const correctFlags = [
+        'CTF{w3lc0me_t0_th3_hunt}',
+        'CTF{css_1s_n0t_just_f0r_styl1ng}',
+        'CTF{l0ok1ng_d33p3r_n0w}',
+        'CTF{c0ns0l3_l0gg1ng_s3cr3ts}',
+        'CTF{un1c0d3_m4st3r}',
+        'CTF{j4v4scr1pt_0bfusc4t10n}',
+        'CTF{url_p4r4m3t3rs_unl0ck3d}',
+        'CTF{k0n4m1_c0d3_m4st3r}',
+        'CTF{l33t_t1m3_h4ck3r}'
+    ];
+    
+    if (flags.length === correctFlags.length && flags.every(f => correctFlags.includes(f))) {
+        return 'CTF{gr4nd_m4st3r_cyb3r_h4ck3r_2024}';
+    }
+    return null;
+}
+
+// Easter egg for curious minds
+window.showHints = function() {
+    console.log('%c=== CTF HINTS ===', 'color: cyan; font-size: 18px; font-weight: bold;');
+    console.log('1. Check HTML source code comments');
+    console.log('2. Inspect CSS file for hidden flags');
+    console.log('3. Look for base64 encoded data in attributes');
+    console.log('4. Console messages may contain secrets');
+    console.log('5. Check CSS for unicode encoded content');
+    console.log('6. Array obfuscation in JavaScript');
+    console.log('7. Try URL parameters (?unlock=true)');
+    console.log('8. Try the Konami Code (↑↑↓↓←→←→BA)');
+    console.log('9. Check the page at 13:37 (leet time)');
+    console.log('10. Collect all flags to unlock the master flag');
+    console.log('%cType validateAllFlags([...your flags...]) to check!', 'color: yellow;');
+};

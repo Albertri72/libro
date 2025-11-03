@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTF Flag Validator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            color: #00ff00;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: #0a0a0a;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00; }
+            to { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; }
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #00aa00;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #00ff00;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .flag-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #1a1a1a;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .flag-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #0a0a0a;
+            border-left: 3px solid #00ff00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .flag-item.correct {
+            border-left-color: #00ff00;
+            background: #0a2a0a;
+        }
+        
+        .flag-item.incorrect {
+            border-left-color: #ff0000;
+            color: #ff0000;
+            background: #2a0a0a;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: #00cc00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .btn-secondary {
+            background: #333;
+            color: #00ff00;
+        }
+        
+        .btn-secondary:hover {
+            background: #444;
+        }
+        
+        .results {
+            margin-top: 20px;
+            padding: 20px;
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .results h2 {
+            color: #00ff00;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: #0a0a0a;
+            border-left: 3px solid #00ff00;
+        }
+        
+        .rank {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+            padding: 20px;
+            background: #0a0a0a;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+        }
+        
+        .rank.novice { border-color: #888; color: #888; }
+        .rank.junior { border-color: #00ff00; color: #00ff00; }
+        .rank.expert { border-color: #00aaff; color: #00aaff; }
+        .rank.master { border-color: #ffd700; color: #ffd700; }
+        
+        .hints {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0a0a0a;
+            border: 1px solid #666;
+            border-radius: 5px;
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .hints h3 {
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+        
+        .terminal-cursor {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚩 CTF FLAG VALIDATOR 🚩</h1>
+        <p class="subtitle">Validador de Banderas - Libro Digital CTF Challenge</p>
+        
+        <div class="input-group">
+            <label for="flag-input">Ingresa una Flag (formato: CTF{...}):</label>
+            <input type="text" id="flag-input" placeholder="CTF{tu_flag_aqui}" autocomplete="off">
+        </div>
+        
+        <button class="btn" onclick="addFlag()">Agregar Flag</button>
+        <button class="btn btn-secondary" onclick="validateAll()">Validar Todas las Flags</button>
+        <button class="btn btn-secondary" onclick="clearFlags()">Limpiar Lista</button>
+        
+        <div class="flag-list" id="flag-list">
+            <p style="text-align: center; color: #666;">No hay flags ingresadas aún...</p>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>📊 RESULTADOS <span class="terminal-cursor">_</span></h2>
+            <div class="stat">
+                <span>Flags Correctas:</span>
+                <span id="correct-count">0</span>
+            </div>
+            <div class="stat">
+                <span>Flags Incorrectas:</span>
+                <span id="incorrect-count">0</span>
+            </div>
+            <div class="stat">
+                <span>Puntuación Total:</span>
+                <span id="total-score">0</span>
+            </div>
+            <div class="rank" id="rank">
+                Rango: Desconocido
+            </div>
+            <div id="master-flag" style="display: none; text-align: center; margin-top: 20px; padding: 20px; background: linear-gradient(45deg, #ffd700, #ffed4e); color: #000; border-radius: 10px; font-weight: bold; font-size: 18px;">
+                🏆 ¡MASTER FLAG DESBLOQUEADA! 🏆<br>
+                <span id="master-flag-text"></span>
+            </div>
+        </div>
+        
+        <div class="hints">
+            <h3>💡 Pistas:</h3>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Hay 10 flags escondidas en total (9 regulares + 1 master)</li>
+                <li>Revisa el código fuente HTML, CSS y JavaScript</li>
+                <li>Usa las DevTools del navegador (F12)</li>
+                <li>Algunas flags requieren decodificación (Base64, ROT13, Unicode)</li>
+                <li>Lee el archivo CTF_README.md para más información</li>
+                <li>Escribe <code>showHints()</code> en la consola del libro para pistas específicas</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        const correctFlags = [
+            { flag: 'CTF{w3lc0me_t0_th3_hunt}', points: 10, name: 'FLAG 1 - HTML Comments' },
+            { flag: 'CTF{css_1s_n0t_just_f0r_styl1ng}', points: 10, name: 'FLAG 2 - CSS Comments' },
+            { flag: 'CTF{l0ok1ng_d33p3r_n0w}', points: 10, name: 'FLAG 3 - Base64 Data' },
+            { flag: 'CTF{c0ns0l3_l0gg1ng_s3cr3ts}', points: 20, name: 'FLAG 4 - Console Log' },
+            { flag: 'CTF{un1c0d3_m4st3r}', points: 20, name: 'FLAG 5 - Unicode Encoding' },
+            { flag: 'CTF{j4v4scr1pt_0bfusc4t10n}', points: 20, name: 'FLAG 6 - JS Obfuscation' },
+            { flag: 'CTF{url_p4r4m3t3rs_unl0ck3d}', points: 20, name: 'FLAG 7 - URL Parameters' },
+            { flag: 'CTF{k0n4m1_c0d3_m4st3r}', points: 30, name: 'FLAG 8 - Konami Code' },
+            { flag: 'CTF{l33t_t1m3_h4ck3r}', points: 30, name: 'FLAG 9 - Leet Time' }
+        ];
+        
+        const masterFlag = { flag: 'CTF{gr4nd_m4st3r_cyb3r_h4ck3r_2024}', points: 100, name: 'FLAG 10 - Master Flag' };
+        
+        let enteredFlags = [];
+        
+        function addFlag() {
+            const input = document.getElementById('flag-input');
+            const flag = input.value.trim();
+            
+            if (!flag) {
+                alert('Por favor ingresa una flag');
+                return;
+            }
+            
+            if (!flag.startsWith('CTF{') || !flag.endsWith('}')) {
+                alert('Formato inválido. Debe ser: CTF{...}');
+                return;
+            }
+            
+            if (enteredFlags.some(f => f.flag === flag)) {
+                alert('Esta flag ya fue ingresada');
+                return;
+            }
+            
+            const isCorrect = correctFlags.some(f => f.flag === flag) || flag === masterFlag.flag;
+            const flagInfo = correctFlags.find(f => f.flag === flag) || (flag === masterFlag.flag ? masterFlag : null);
+            
+            enteredFlags.push({
+                flag: flag,
+                correct: isCorrect,
+                points: flagInfo ? flagInfo.points : 0,
+                name: flagInfo ? flagInfo.name : 'Flag desconocida'
+            });
+            
+            updateFlagList();
+            input.value = '';
+            input.focus();
+        }
+        
+        function updateFlagList() {
+            const list = document.getElementById('flag-list');
+            if (enteredFlags.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #666;">No hay flags ingresadas aún...</p>';
+                return;
+            }
+            
+            list.innerHTML = enteredFlags.map((f, i) => `
+                <div class="flag-item ${f.correct ? 'correct' : 'incorrect'}">
+                    <span>${f.correct ? '✓' : '✗'} ${f.flag}</span>
+                    <span>${f.correct ? `+${f.points} pts` : '0 pts'}</span>
+                </div>
+            `).join('');
+        }
+        
+        function validateAll() {
+            if (enteredFlags.length === 0) {
+                alert('No hay flags para validar');
+                return;
+            }
+            
+            const correctCount = enteredFlags.filter(f => f.correct).length;
+            const incorrectCount = enteredFlags.filter(f => !f.correct).length;
+            const totalScore = enteredFlags.reduce((sum, f) => sum + (f.correct ? f.points : 0), 0);
+            
+            document.getElementById('correct-count').textContent = correctCount;
+            document.getElementById('incorrect-count').textContent = incorrectCount;
+            document.getElementById('total-score').textContent = totalScore;
+            
+            const rankElement = document.getElementById('rank');
+            let rankText = '';
+            let rankClass = '';
+            
+            if (totalScore >= 270) {
+                rankText = '👑 MAESTRO CTF 👑';
+                rankClass = 'master';
+            } else if (totalScore >= 190) {
+                rankText = '🛡️ EXPERTO EN SEGURIDAD 🛡️';
+                rankClass = 'expert';
+            } else if (totalScore >= 100) {
+                rankText = '💻 HACKER JUNIOR 💻';
+                rankClass = 'junior';
+            } else {
+                rankText = '🌱 NOVATO 🌱';
+                rankClass = 'novice';
+            }
+            
+            rankElement.textContent = rankText;
+            rankElement.className = 'rank ' + rankClass;
+            
+            // Check if all 9 regular flags are found
+            const regularFlags = enteredFlags.filter(f => 
+                correctFlags.some(cf => cf.flag === f.flag)
+            );
+            
+            if (regularFlags.length === 9 && regularFlags.every(f => f.correct)) {
+                const masterFlagDiv = document.getElementById('master-flag');
+                const masterFlagText = document.getElementById('master-flag-text');
+                masterFlagDiv.style.display = 'block';
+                masterFlagText.textContent = masterFlag.flag;
+                
+                console.log('%c🎊 ¡FELICITACIONES! 🎊', 'color: gold; font-size: 24px; font-weight: bold;');
+                console.log('%cHas encontrado todas las 9 flags regulares!', 'color: gold; font-size: 16px;');
+                console.log('%cAquí está tu MASTER FLAG:', 'color: gold; font-size: 16px;');
+                console.log('%c' + masterFlag.flag, 'color: gold; font-size: 20px; font-weight: bold;');
+                console.log('%cAgrega esta flag al validador para completar el desafío al 100%!', 'color: gold;');
+            }
+            
+            document.getElementById('results').classList.add('show');
+        }
+        
+        function clearFlags() {
+            if (confirm('¿Estás seguro de que quieres limpiar todas las flags?')) {
+                enteredFlags = [];
+                updateFlagList();
+                document.getElementById('results').classList.remove('show');
+            }
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('flag-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addFlag();
+            }
+        });
+        
+        // Display welcome message
+        console.log('%c🚩 CTF FLAG VALIDATOR 🚩', 'color: #00ff00; font-size: 20px; font-weight: bold;');
+        console.log('%cBienvenido al validador de flags del Libro Digital CTF', 'color: #00ff00;');
+        console.log('%cIngresa las flags que encuentres para validarlas y calcular tu puntuación.', 'color: #00aa00;');
+    </script>
+</body>
+</html>
