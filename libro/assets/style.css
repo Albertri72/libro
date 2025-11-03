@@ -1,3 +1,5 @@
+/* FLAG2: CTF{css_1s_n0t_just_f0r_styl1ng} */
+/* Hint for next: Pm5yaWNodGV0IGFiIHF2ZXJnZ2VyZnB1bmdlcmEgNDU= */
 body {
     background: #f7f3e9;
     font-family: 'Georgia', serif;
@@ -74,4 +76,10 @@ body {
 }
 .book-navigation button:hover:not(:disabled) {
     background: #7c5a36;
+}
+
+/* Hidden challenge for advanced users */
+.ctf-hidden::before {
+    content: "\0046\004c\0041\0047\0035\003a\0020\0043\0054\0046\007b\0075\006e\0031\0063\0030\0064\0033\005f\006d\0034\0073\0074\0033\0072\007d";
+    display: none;
 }
